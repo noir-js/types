@@ -130,7 +130,7 @@
 
 "@noir/util@github:noir-js/util":
   version "0.1.0"
-  resolved "git+ssh://git@github.com/noir-js/util.git#e9799eca42371a0030da6898eefc5b08f0793431"
+  resolved "git+ssh://git@github.com/noir-js/util.git#d1100a7c8a8586324f4e71c50c8eadc87e7546c6"
   dependencies:
     "@polkadot/util" "^12.2.1"
 
