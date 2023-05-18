@@ -9,6 +9,7 @@ import { Binary } from './Binary.js';
 /* eslint-disable sort-keys */
 const MULTICODEC = {
   secp256k1: new Uint8Array([0xe7, 0x01]),
+  ed25519: new Uint8Array([0xed, 0x01]),
   sr25519: new Uint8Array([0xef, 0x01]),
   p256: new Uint8Array([0x80, 0x24]),
   blake2b_256: new Uint8Array([0xa0, 0xe4, 0x02, 0x20])
