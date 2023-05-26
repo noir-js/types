@@ -3,7 +3,7 @@
 
 import type { AnyNumber, AnyString, Registry } from '@polkadot/types-codec/types';
 
-import { isString } from '@noir/util';
+import { isString } from '@pinot/util';
 import { U128 } from '@polkadot/types-codec';
 
 function isAlphaNumeric (s: string) {

@@ -1,7 +1,7 @@
 // Copyright (C) 2023 Haderech Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isHex, isString, u8aToBase64url } from '@noir/util';
+import { isHex, isString, u8aToBase64url } from '@pinot/util';
 import { AnyU8a, Registry } from '@polkadot/types-codec/types';
 
 import { Binary } from './Binary.js';

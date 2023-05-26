@@ -3,7 +3,7 @@
 
 import type { Inspect, Registry } from '@polkadot/types-codec/types';
 
-import { decodeAddress, isBn, isNumber, isString, isU8a } from '@noir/util';
+import { decodeAddress, isBn, isNumber, isString, isU8a } from '@pinot/util';
 import { Enum } from '@polkadot/types-codec';
 
 import { AccountName } from './AccountName.js';

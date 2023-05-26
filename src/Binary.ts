@@ -3,7 +3,7 @@
 
 import type { AnyString, AnyU8a, Registry } from '@polkadot/types-codec/types';
 
-import { base64urlToU8a, compactAddLength, hexToU8a, isHex, isString, isU8a, u8aToBase64url, u8aToU8a } from '@noir/util';
+import { base64urlToU8a, compactAddLength, hexToU8a, isHex, isString, isU8a, u8aToBase64url, u8aToU8a } from '@pinot/util';
 import { Bytes } from '@polkadot/types';
 
 export function decodeBinary (value?: AnyU8a | AnyString): Uint8Array {

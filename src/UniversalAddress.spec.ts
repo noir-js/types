@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { compactToU8a, hexToU8a, u8aConcat } from '@noir/util';
+import { compactToU8a, hexToU8a, u8aConcat } from '@pinot/util';
 import { TypeRegistry } from '@polkadot/types';
 
 import { UniversalAddress } from './UniversalAddress.js';
