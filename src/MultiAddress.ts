@@ -12,7 +12,7 @@ import { UniversalAddress } from './UniversalAddress.js';
 function decodeU8a (registry: Registry, u8a: Uint8Array): unknown {
   if (u8a.length === 0) {
     return { Id: u8a };
-  } else if ((u8a.length >= 34 && u8a.length <= 36) && [0x88, 0x8c, 0x90].includes(u8a[0])) {
+  } else if ((u8a.length >= 34 && u8a.length <= 36) && [0xe7, 0xed, 0xef, 0x80, 0xa0].includes(u8a[0])) {
     return { Id: registry.createType('AccountId', u8a) };
   } else if (u8a.length <= 19) {
     return { Index: registry.createType<AccountName>('AccountIndex', u8a).toNumber() };

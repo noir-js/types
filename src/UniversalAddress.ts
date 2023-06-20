@@ -1,10 +1,9 @@
 // Copyright (C) 2023 Haderech Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isHex, isString, u8aToBase64url } from '@pinot/util';
+import { base64urlToU8a, hexToU8a, isHex, isString, isU8a, u8aToBase64url, u8aToU8a } from '@pinot/util';
+import { Raw } from '@polkadot/types';
 import { AnyU8a, Registry } from '@polkadot/types-codec/types';
-
-import { Binary } from './Binary.js';
 
 /* eslint-disable sort-keys */
 const MULTICODEC = {
@@ -20,45 +19,47 @@ function u8aStartsWith (v: Uint8Array, w: Uint8Array): boolean {
   if (v.length < w.length) {
     return false;
   }
-
   for (let i = 0; i < w.length; ++i) {
     if (v[i] !== w[i]) {
       return false;
     }
   }
-
   return true;
 }
 
-export class UniversalAddress extends Binary {
-  static validate (u8a: Uint8Array): Uint8Array {
-    if (u8a.length === 0) {
-      return u8a;
-    }
-
-    let alg: keyof typeof MULTICODEC;
-
-    for (alg in MULTICODEC) {
-      if (u8aStartsWith(u8a, MULTICODEC[alg])) {
-        return u8a;
-      }
-    }
-
-    throw new Error('Unknown algorithm, UniversalAddress construction is failed');
-  }
-
+export class UniversalAddress extends Raw {
   constructor (registry: Registry, value?: AnyU8a) {
-    if (!isHex(value) && isString(value)) {
-      if (value.at(0) !== 'u') {
-        throw new Error('Multibase (base64url) format address is only supported now');
-      }
+    let u8a;
 
-      super(registry, value.substring(1));
+    if (isU8a(value) || Array.isArray(value)) {
+      u8a = u8aToU8a(value);
+    } else if (!value) {
+      u8a = new Uint8Array();
+    } else if (isHex(value)) {
+      u8a = hexToU8a(value);
+    } else if (isString(value)) {
+      if (value.at(0) !== 'u') {
+        throw new Error('Unsupported format for UniversalAddress');
+      }
+      u8a = base64urlToU8a(value.substring(1));
     } else {
-      super(registry, value);
+      throw new Error('Unsupported type for UniversalAddress');
     }
 
-    UniversalAddress.validate(this);
+    if (u8a.length !== 0) {
+      let valid = false;
+      for (const alg of Object.values(MULTICODEC)) {
+        if (u8aStartsWith(u8a, alg)) {
+          valid = true;
+          break;
+        }
+      }
+      if (!valid) {
+        throw new Error('Unknown algorithm for UniversalAddress');
+      }
+    }
+
+    super(registry, u8a, u8a.length);
   }
 
   public override toHuman (): string {
@@ -66,7 +67,7 @@ export class UniversalAddress extends Binary {
   }
 
   public override toString (): string {
-    return 'u' + u8aToBase64url(this.toU8a(true));
+    return 'u' + u8aToBase64url(this.toU8a());
   }
 
   public override toRawType (): string {
