@@ -73,4 +73,16 @@ export class UniversalAddress extends Raw {
   public override toRawType (): string {
     return 'UniversalAddress';
   }
+
+  public get kind (): string {
+    const u8a = this.toU8a();
+
+    for (const [k, v] of Object.entries(MULTICODEC)) {
+      if (u8aStartsWith(u8a, v)) {
+        return k;
+      }
+    }
+
+     return 'unknown';
+  }
 }
