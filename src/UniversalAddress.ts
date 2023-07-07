@@ -1,7 +1,7 @@
 // Copyright (C) 2023 Haderech Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-import { base64urlToU8a, hexToU8a, isHex, isString, isU8a, u8aToBase64url, u8aToU8a } from '@pinot/util';
+import { base64urlToU8a, hexToU8a, isHex, isString, isU8a, u8aStartsWith, u8aToBase64url, u8aToU8a } from '@pinot/util';
 import { Raw } from '@polkadot/types';
 import { AnyU8a, Registry } from '@polkadot/types-codec/types';
 
@@ -14,18 +14,6 @@ const MULTICODEC = {
   blake2b_256: new Uint8Array([0xa0, 0xe4, 0x02, 0x20])
 };
 /* eslint-enable sort-keys */
-
-function u8aStartsWith (v: Uint8Array, w: Uint8Array): boolean {
-  if (v.length < w.length) {
-    return false;
-  }
-  for (let i = 0; i < w.length; ++i) {
-    if (v[i] !== w[i]) {
-      return false;
-    }
-  }
-  return true;
-}
 
 export class UniversalAddress extends Raw {
   constructor (registry: Registry, value?: AnyU8a) {
