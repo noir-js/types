@@ -1,33 +1,51 @@
 // Copyright (C) 2023 Haderech Pte. Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-import { base64urlToU8a, hexToU8a, isHex, isString, isU8a, u8aToBase64url, u8aToU8a } from '@pinot/util';
+import { base64urlToU8a, hexToU8a, isHex, isString, isU8a, u8aStartsWith, u8aToBase64url, u8aToU8a } from '@pinot/util';
 import { Raw } from '@polkadot/types';
 import { AnyU8a, Registry } from '@polkadot/types-codec/types';
 
 /* eslint-disable sort-keys */
-const MULTICODEC = {
-  secp256k1: new Uint8Array([0xe7, 0x01]),
-  ed25519: new Uint8Array([0xed, 0x01]),
-  sr25519: new Uint8Array([0xef, 0x01]),
-  p256: new Uint8Array([0x80, 0x24]),
-  blake2b_256: new Uint8Array([0xa0, 0xe4, 0x02, 0x20])
+export const ALGORITHMS = {
+  ed25519: {
+    len: 34,
+    multicodec: Uint8Array.from([0xed, 0x01])
+  },
+  sr25519: {
+    len: 34,
+    multicodec: Uint8Array.from([0xef, 0x01])
+  },
+  secp256k1: {
+    len: 35,
+    multicodec: Uint8Array.from([0xe7, 0x01])
+  },
+  p256: {
+    len: 35,
+    multicodec: Uint8Array.from([0x80, 0x24])
+  },
+  blake2b_256: {
+    len: 36,
+    multicodec: Uint8Array.from([0xa0, 0xe4, 0x02, 0x20])
+  }
 };
 /* eslint-enable sort-keys */
 
-function u8aStartsWith (v: Uint8Array, w: Uint8Array): boolean {
-  if (v.length < w.length) {
+export class UniversalAddress extends Raw {
+  public static validate (value: AnyU8a): boolean {
+    const u8a = u8aToU8a(value);
+
+    if (u8a.length === 0) {
+      return true;
+    } else {
+      for (const algo of Object.values(ALGORITHMS)) {
+        if (u8aStartsWith(u8a, algo.multicodec)) {
+          return u8a.length === algo.len;
+        }
+      }
+    }
     return false;
   }
-  for (let i = 0; i < w.length; ++i) {
-    if (v[i] !== w[i]) {
-      return false;
-    }
-  }
-  return true;
-}
 
-export class UniversalAddress extends Raw {
   constructor (registry: Registry, value?: AnyU8a) {
     let u8a;
 
@@ -46,17 +64,8 @@ export class UniversalAddress extends Raw {
       throw new Error('Unsupported type for UniversalAddress');
     }
 
-    if (u8a.length !== 0) {
-      let valid = false;
-      for (const alg of Object.values(MULTICODEC)) {
-        if (u8aStartsWith(u8a, alg)) {
-          valid = true;
-          break;
-        }
-      }
-      if (!valid) {
-        throw new Error('Unknown algorithm for UniversalAddress');
-      }
+    if (!UniversalAddress.validate(u8a)) {
+      throw new Error('Unknown algorithm for UniversalAddress');
     }
 
     super(registry, u8a, u8a.length);
@@ -72,5 +81,17 @@ export class UniversalAddress extends Raw {
 
   public override toRawType (): string {
     return 'UniversalAddress';
+  }
+
+  public get kind (): string {
+    const u8a = this.toU8a();
+
+    for (const [name, algo] of Object.entries(ALGORITHMS)) {
+      if (u8aStartsWith(u8a, algo.multicodec)) {
+        return name;
+      }
+    }
+
+     return 'unknown';
   }
 }
