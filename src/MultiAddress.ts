@@ -14,7 +14,7 @@ function decodeU8a (registry: Registry, u8a: Uint8Array): unknown {
     return { Id: u8a };
   } else if (UniversalAddress.validate(u8a)) {
     return { Id: registry.createType('AccountId', u8a) };
-  } else if (u8a.length <= 19) {
+  } else if (u8a.length <= 16) {
     return { Index: registry.createType<AccountName>('AccountIndex', u8a).toNumber() };
   }
 
