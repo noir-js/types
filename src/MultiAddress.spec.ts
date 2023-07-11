@@ -3,7 +3,6 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { hexToU8a, u8aConcat } from '@pinot/util';
 import { TypeRegistry } from '@polkadot/types';
 
 import { MultiAddress } from './MultiAddress.js';
@@ -17,11 +16,17 @@ describe('MultiAddress', (): void => {
     'AccountId': UniversalAddress
   });
 
+  const sr = 'u7wHUNZPHFf3THGEUGr0EqZ_WgiyFWIVMzeOaVoTnpW2ifQ';
   const k1 = 'u5wECOvHh76TR4a1cueOWfpjpAdr803xEzwv7bCFpl_XuUd8';
   const b2 = 'uoOQCIO_a-ocLu6rnJvG859XLBNZM4u32LX0JVG94-hpGvzOi';
 
   describe('decoding', (): void => {
     it('can decode a universal address', (): void => {
+      const m0 = registry.createType<MultiAddress>('MultiAddress', sr);
+      expect(m0.type).toEqual('Id');
+      expect(m0.value.toHuman()).toEqual(sr);
+      expect((m0.value as UniversalAddress).kind).toEqual('sr25519');
+
       const m1 = registry.createType<MultiAddress>('MultiAddress', k1);
       expect(m1.type).toEqual('Id');
       expect(m1.value.toHuman()).toEqual(k1);
