@@ -78,9 +78,9 @@ export class AccountName extends U128 {
 
   public override toHuman (): string {
     const raw = this.toU8a();
-    const tag = new DataView(raw.slice(0, 2).buffer).getUint16(0, true);
+    const tag = new DataView(raw.subarray(0, 2).buffer).getUint16(0, true);
 
-    const nameRaw = raw.slice(2);
+    const nameRaw = raw.subarray(2);
     let name = '';
     let index = nameRaw.indexOf(0);
 
