@@ -31,21 +31,6 @@ export const ALGORITHMS = {
 /* eslint-enable sort-keys */
 
 export class UniversalAddress extends Raw {
-  public static validate (value: AnyU8a): boolean {
-    const u8a = u8aToU8a(value);
-
-    if (u8a.length === 0) {
-      return true;
-    } else {
-      for (const algo of Object.values(ALGORITHMS)) {
-        if (u8aStartsWith(u8a, algo.multicodec)) {
-          return u8a.length === algo.len;
-        }
-      }
-    }
-    return false;
-  }
-
   constructor (registry: Registry, value?: AnyU8a) {
     let u8a;
 
@@ -64,11 +49,19 @@ export class UniversalAddress extends Raw {
       throw new Error('Unsupported type for UniversalAddress');
     }
 
-    if (!UniversalAddress.validate(u8a)) {
+    let decodedLength = 0;
+
+    for (const algo of Object.values(ALGORITHMS)) {
+      if (u8aStartsWith(u8a, algo.multicodec)) {
+        decodedLength = algo.len;
+        break;
+      }
+    }
+    if (decodedLength === 0 || (isU8a(value) ? u8a.length < decodedLength : u8a.length !== decodedLength)) {
       throw new Error('Unknown algorithm for UniversalAddress');
     }
 
-    super(registry, u8a, u8a.length);
+    super(registry, u8a.subarray(0, decodedLength), decodedLength);
   }
 
   public override toHuman (): string {

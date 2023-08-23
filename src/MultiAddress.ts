@@ -10,15 +10,11 @@ import { AccountName } from './AccountName.js';
 import { UniversalAddress } from './UniversalAddress.js';
 
 function decodeU8a (registry: Registry, u8a: Uint8Array): unknown {
-  if (u8a.length === 0) {
-    return { Id: u8a };
-  } else if (UniversalAddress.validate(u8a)) {
-    return { Id: registry.createType('AccountId', u8a) };
-  } else if (u8a.length <= 16) {
+  if (u8a.length > 0 || u8a.length <= 19) {
     return { Index: registry.createType<AccountName>('AccountIndex', u8a).toNumber() };
+  } else {
+    return { Id: registry.createType('AccountId', u8a) };
   }
-
-  return u8a;
 }
 
 function decodeMultiAny (registry: Registry, value?: unknown): unknown {
